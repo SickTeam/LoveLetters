@@ -1,0 +1,154 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.0.1"
+  title: Love Letter
+
+# Describe your paths here
+paths:
+  /game:
+    get:
+      description: |
+        Gets `Game` objects.
+
+      responses:
+        200:
+          description: Successful response
+
+    post:
+      description:
+        Creates a new game.
+      parameters:
+        -
+          name: gameInfo
+          in: body
+          description: The info used to create a new game
+          schema: 
+            $ref: '#/definitions/createGameInfo'
+        
+      responses:
+        200:
+          description: Created game
+  
+  /game/{gameId}:
+    get: 
+      description: Game info
+      parameters:
+        - 
+          $ref: '#/parameters/gameId'
+        -
+          $ref: '#/parameters/playerAuth'
+          
+      responses:
+        200:
+          description: Fetched game
+  
+  /game/{gameId}/players:
+    get:
+      description: Gets the score of all players
+      parameters: 
+      -
+        $ref: '#/parameters/playerAuth'
+      -
+        $ref: '#/parameters/gameId'
+          
+      responses: 
+        200: 
+          description: Retrieved scores
+  
+    post:
+      description:
+        Joins a game.
+      parameters:
+        -
+          name: playerInfo
+          in: query
+          type: string
+          description: Name of the joining player
+        - 
+          $ref: '#/parameters/gameId'
+        -
+          $ref: '#/parameters/playerAuth'
+          
+      responses:
+        200:
+          description: Joined game
+          
+          
+  /game/{gameId}/{playerId}/hand:
+    get:
+      description:
+        Get the players hand.
+      parameters:
+        -
+          $ref: '#/parameters/playerAuth'
+        - 
+          $ref: '#/parameters/gameId'
+        - 
+          $ref: '#/parameters/playerId'
+          
+      responses:
+        200:
+          description: Retrieved player hand
+          
+  /game/{gameId}/gameActions:
+    post:
+      description: Performs an action in the game
+      parameters:
+        -
+          name: action
+          in: query
+          type: string
+        -
+          name: card
+          in: body
+          schema: 
+            $ref: '#/definitions/discardCard'
+        -
+          $ref: '#/parameters/playerAuth'
+        - 
+          $ref: '#/parameters/gameId'
+          
+      responses:
+        200:
+          description: Performed action
+          
+    
+        
+      
+definitions:
+  createGameInfo:
+    type: object
+    required: 
+      - username
+      - gametitle
+    properties:
+      username:
+        type: string
+      gametitle:
+        type: string
+  discardCard:
+    type: integer
+    
+
+parameters:
+  gameId:
+    name: gameId
+    in: path
+    description: Game to join
+    required: true
+    type: string
+  playerId:
+    name: playerId
+    in: path
+    description: The id of the player
+    required: true
+    type: string
+  playerAuth:
+    name: Authentication
+    in: header
+    type: string
